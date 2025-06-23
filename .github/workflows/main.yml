@@ -1,0 +1,35 @@
+name: Monthly Stamp Duty Update
+on:
+  schedule:
+    - cron: '0 0 1 * *'  
+  workflow_dispatch:      
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas beautifulsoup4 requests
+      
+      - name: Run scraper
+        run: python KRScraperBasic.py
+      
+      - name: Commit changes
+        run: |
+          git config --global user.name "marcusmak123"
+          git config --global user.email "marcusmak123@gmail.com"
+          git add krtax.csv
+          git commit -m "Monthly stamp duty update"
+          git push
